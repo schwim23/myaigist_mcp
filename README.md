@@ -1,23 +1,23 @@
 # MyAIGist MCP Server
 
-Local MCP server for Claude Desktop providing document intelligence and knowledge management. Process documents and answer questions with RAG - all running locally with zero infrastructure costs.
+MCP server providing document intelligence and knowledge management for Claude Desktop and other MCP-compatible clients. Process documents, answer questions with RAG, and maintain a persistent knowledge base - all running locally.
 
 ## Overview
 
 **MyAIGist MCP** provides 10 powerful tools for document intelligence and knowledge management:
 
 - **Document Processing**: PDF, DOCX, TXT, URLs, file attachments, and batch processing
-- **Q&A System**: RAG-powered question answering
+- **Q&A System**: RAG-powered question answering across multiple documents
 - **Knowledge Management**: Persistent vector storage with document tracking
 
 ## Features
 
-✅ **Core document intelligence** - Process, summarize, and search documents
+✅ **MCP-compatible** - Works with Claude Desktop, Cursor, and other MCP clients
 ✅ **Claude-powered** - Uses Claude Sonnet 4.5 for summarization and Q&A
-✅ **Local execution** - Runs in Claude Desktop
-✅ **Persistent storage** - Single vector store across sessions
-✅ **Multi-document RAG** - Unlimited documents (no 5-doc limit)
-✅ **Zero infrastructure costs** - Replaces $200-400/month AWS deployment
+✅ **Local execution** - Runs on your machine with no external infrastructure
+✅ **Persistent storage** - Single vector store survives across sessions
+✅ **Multi-document RAG** - Unlimited documents in knowledge base
+✅ **Simple setup** - Install dependencies, configure API keys, and go
 
 ## Installation
 
@@ -26,13 +26,13 @@ Local MCP server for Claude Desktop providing document intelligence and knowledg
 - Python 3.8+
 - Anthropic API key (for Claude text generation)
 - OpenAI API key (for embeddings)
-- Claude Desktop installed
+- MCP-compatible client (Claude Desktop, Cursor, etc.)
 
 ### Setup
 
 1. **Install dependencies:**
    ```bash
-   cd /Users/mikeschwimmer/myaigist_mcp
+   cd /path/to/myaigist_mcp
    pip install -r requirements.txt
    ```
 
@@ -44,23 +44,37 @@ Local MCP server for Claude Desktop providing document intelligence and knowledg
    # - OPENAI_API_KEY (for embeddings)
    ```
 
-3. **Configure Claude Desktop:**
+3. **Configure your MCP client:**
 
-   Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+   **Claude Desktop** - Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
    ```json
    {
      "mcpServers": {
        "myaigist": {
-         "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
-         "args": ["/Users/mikeschwimmer/myaigist_mcp/server.py"]
+         "command": "python3",
+         "args": ["/path/to/myaigist_mcp/server.py"]
        }
      }
    }
    ```
 
-4. **Restart Claude Desktop**
+   **Cursor** - Add to your Cursor MCP settings:
+   ```json
+   {
+     "mcpServers": {
+       "myaigist": {
+         "command": "python3",
+         "args": ["/path/to/myaigist_mcp/server.py"]
+       }
+     }
+   }
+   ```
 
-   The MCP server will start automatically when you open Claude Desktop.
+   **Other MCP clients** - Refer to your client's documentation for MCP server configuration.
+
+4. **Restart your MCP client**
+
+   The MCP server will start automatically when you open your client.
 
 ## Architecture
 
@@ -105,8 +119,10 @@ Process a document from LOCAL FILE PATH (PDF, DOCX, TXT) and add to knowledge ba
 "Process /Users/mike/contract.pdf as a detailed summary"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 #### 2. `process_uploaded_document`
-Process a document attached to Claude Desktop (recommended for file uploads).
+Process a document attached to Claude Desktop (optimized for Claude Desktop file uploads).
 
 **Parameters:**
 - `content` (string, required): Text content extracted by Claude
@@ -115,9 +131,11 @@ Process a document attached to Claude Desktop (recommended for file uploads).
 
 **Example:**
 ```
-[Attach PDF file]
+[Attach PDF file in Claude Desktop]
 "Process this document with MyAIGist"
 ```
+
+**Compatibility:** Designed for Claude Desktop. Other clients should use `process_document` with file paths.
 
 #### 3. `process_text`
 Process raw text and add to knowledge base.
@@ -127,6 +145,8 @@ Process raw text and add to knowledge base.
 "Process this text: [paste long article]"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 #### 4. `process_url`
 Crawl web URL, extract content, and add to knowledge base.
 
@@ -135,6 +155,8 @@ Crawl web URL, extract content, and add to knowledge base.
 "Process https://example.com/article"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 #### 5. `process_batch`
 Process multiple files and generate unified summary.
 
@@ -142,6 +164,8 @@ Process multiple files and generate unified summary.
 ```
 "Process all files in /Users/mike/research/ and give me a unified summary"
 ```
+
+**Compatibility:** Works with all MCP clients.
 
 ### Q&A System (1 tool)
 
@@ -153,6 +177,8 @@ Ask questions about stored documents using RAG.
 "What are the main findings in the research papers?"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 ### Document Management (3 tools)
 
 #### 7. `list_documents`
@@ -163,6 +189,8 @@ List all documents in knowledge base with metadata.
 "Show me all my documents"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 #### 8. `delete_document`
 Delete specific document by ID.
 
@@ -171,6 +199,8 @@ Delete specific document by ID.
 "Delete document abc123xyz"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 #### 9. `clear_all_documents`
 Clear entire knowledge base.
 
@@ -178,6 +208,8 @@ Clear entire knowledge base.
 ```
 "Clear all my documents"
 ```
+
+**Compatibility:** Works with all MCP clients.
 
 ### Utility Tools (1 tool)
 
@@ -189,9 +221,11 @@ Get system status and knowledge base statistics.
 "What's my system status?"
 ```
 
+**Compatibility:** Works with all MCP clients.
+
 ## Common Workflows
 
-### File Upload (Recommended)
+### File Upload (Claude Desktop)
 ```
 User: [Attaches PDF to Claude Desktop]
 User: "Process this document with MyAIGist"
@@ -201,22 +235,22 @@ User: "What are the key points?"
 Claude: "The key points are..."
 ```
 
-### Single Document Q&A
+### Single Document Q&A (Any MCP Client)
 ```
 User: "Process /Users/mike/contract.pdf"
-Claude: ✅ Processed with summary
+AI: ✅ Processed with summary
 
 User: "What are the payment terms?"
-Claude: "The payment terms are net 30..."
+AI: "The payment terms are net 30..."
 ```
 
-### Multi-Document Research
+### Multi-Document Research (Any MCP Client)
 ```
 User: "Process these 3 research papers: paper1.pdf, paper2.pdf, paper3.pdf"
-Claude: ✅ Processed all 3 with unified summary
+AI: ✅ Processed all 3 with unified summary
 
 User: "What are the common findings across all papers?"
-Claude: "The common findings are..."
+AI: "The common findings are..."
 ```
 
 ## Configuration
@@ -251,26 +285,16 @@ OPENAI_EMBED_MODEL=text-embedding-3-large
 - Persistence: Survives server restarts
 - Capacity: Unlimited documents
 
-## Cost Savings
+## API Costs
 
-**Before (AWS/Flask):** $200-400/month
-- ECS Fargate compute
-- Load balancer
-- CloudWatch
-- Data transfer
-
-**After (MCP/Local):** $0/month infrastructure
-- Runs locally on your machine
-- Only API costs (usage-based)
-
-**API Costs** (estimated monthly):
+**Usage-based pricing:**
 - **Claude Sonnet 4.5**: $3/$15 per 1M tokens (input/output)
 - **OpenAI Embeddings**: $0.13 per 1M tokens
 
-**Typical Usage:**
+**Typical monthly usage:**
 - 100 documents processed: ~$5-10
 - 500 questions answered: ~$2-5
-- **Total: ~$10-15/month** (vs $200-400 AWS)
+- **Total: ~$10-15/month**
 
 ## Troubleshooting
 
@@ -282,14 +306,14 @@ python3 -c "import mcp; print('✅ MCP installed')"
 # Check syntax
 python3 -m py_compile server.py
 
-# Check logs
+# Check logs (Claude Desktop example)
 tail -f ~/Library/Logs/Claude/mcp-server-myaigist.log
 ```
 
 ### Import errors
 ```bash
 # Test agent imports
-cd /Users/mikeschwimmer/myaigist_mcp
+cd /path/to/myaigist_mcp
 python3 -c "from mcp_agents.summarizer import Summarizer; print('✅ Imports work')"
 python3 -c "from mcp_agents.qa_agent import QAAgent; print('✅ QAAgent works')"
 ```
@@ -306,9 +330,9 @@ python3 -c "import os; print('Anthropic:', bool(os.getenv('ANTHROPIC_API_KEY')))
 - Check for errors in server logs
 
 ### File upload not working
-- Use `process_uploaded_document` for Claude Desktop attachments
-- Use `process_document` for local filesystem paths
-- See tool descriptions for guidance
+- **Claude Desktop**: Use `process_uploaded_document` for file attachments
+- **Other clients**: Use `process_document` with local filesystem paths
+- See tool descriptions for compatibility details
 
 ## Development
 
@@ -318,17 +342,14 @@ python3 -c "import os; print('Anthropic:', bool(os.getenv('ANTHROPIC_API_KEY')))
 python3 -c "from mcp_agents.qa_agent import QAAgent; qa = QAAgent(); print('✅ QAAgent works')"
 
 # Test document processing
-cd /Users/mikeschwimmer/myaigist_mcp
+cd /path/to/myaigist_mcp
 python3 -c "from mcp_agents.document_processor import DocumentProcessor; dp = DocumentProcessor(); print('✅ DocumentProcessor works')"
 ```
 
 ### Debugging
 ```bash
-# Check server logs
-tail -f ~/Library/Logs/Claude/mcp-server-myaigist.log
-
 # Run server manually to see output
-python3 /Users/mikeschwimmer/myaigist_mcp/server.py
+python3 /path/to/myaigist_mcp/server.py
 ```
 
 ## Project Structure
@@ -354,38 +375,35 @@ myaigist_mcp/
     └── vector_store.pkl  # Vector embeddings and metadata
 ```
 
-## Recent Changes
+## MCP Client Compatibility
 
-**2026-01-19:** Removed audio/video processing features
-- Removed `process_media`, `process_uploaded_media`, and `ask_question_voice` tools
-- Removed Whisper transcription and media file support
-- Focused purely on document intelligence (text-based content)
-- Simplified from 13 to 10 tools
-- Removed audio/video dependencies and temporary file handling
+### Tested Clients
+- ✅ **Claude Desktop** - Full support including file attachments
+- ⚠️ **Cursor** - Core functionality works (use file paths instead of attachments)
+- ❓ **Other MCP clients** - Should work with file path-based tools
 
-**2026-01-19:** Updated to Claude Sonnet 4.5
-- Migrated from OpenAI to Anthropic Claude for text generation
-- Claude Sonnet 4.5 for summarization and Q&A (better quality)
-- OpenAI still used for embeddings (Claude doesn't provide)
-- Added `process_uploaded_document` tool for Claude Desktop file attachments
-- Now requires both ANTHROPIC_API_KEY and OPENAI_API_KEY
+### Compatibility Notes
+- All tools work with standard file paths
+- `process_uploaded_document` is optimized for Claude Desktop's file attachment behavior
+- Other clients should use `process_document` with local file paths
+- Standard MCP protocol (stdio transport, JSON-RPC)
 
 ## License
 
-Same as original myaigist project.
+MIT License
 
 ## Support
 
 For issues or questions:
 1. Check troubleshooting section above
-2. Review MCP logs: `~/Library/Logs/Claude/mcp-server-myaigist.log`
+2. Review MCP server logs (location varies by client)
 3. Verify environment variables in `.env`
 4. Test agent imports individually
 
 ---
 
 **Last Updated:** 2026-01-19
-**Project Status:** ✅ Complete - 10 core tools implemented and tested
+**Project Status:** ✅ Production ready - 10 core tools implemented and tested
 **Models:** Claude Sonnet 4.5 (text) + OpenAI (embeddings)
-**Cost Savings:** $200-400/month → ~$10-15/month
 **Focus:** Document intelligence (text-based content only)
+**Compatibility:** Claude Desktop, Cursor, and other MCP-compatible clients
